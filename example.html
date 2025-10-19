@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Product Comparison Tool</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 600px;
+      margin: 50px auto 0;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 12px 26px 0 rgba(80, 97, 198, 0.13);
+      padding: 44px 30px 32px;
+      text-align: center;
+      animation: popIn 1s;
+    }
+    @keyframes popIn {
+      0%   { transform: scale(0.93); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    h2 {
+      color: #344675;
+      margin-bottom: 1.2em;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+    }
+    select {
+      width: 88%;
+      padding: 12px;
+      margin: 18px 0 12px 0;
+      border: 1px solid #bcc3d9;
+      font-size: 1.08em;
+      border-radius: 7px;
+      outline: none;
+      transition: border 0.3s;
+    }
+    select:focus {
+      border: 1.5px solid #5663f7;
+    }
+    button {
+      background: linear-gradient(90deg, #5663f7 0, #a977eb 80%);
+      color: #fff;
+      font-size: 1.08em;
+      padding: 12px 38px;
+      border: none;
+      cursor: pointer;
+      border-radius: 6px;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(86,99,247,0.07);
+      margin-bottom: 10px;
+      margin-top: 0.6em;
+      transition: background 0.27s;
+    }
+    button:hover {
+      background: linear-gradient(90deg, #344675 0, #5663f7 85%);
+    }
+    .result-card {
+      background: #f6f9ff;
+      margin-top: 36px;
+      padding: 30px 10px 18px;
+      border-radius: 14px;
+      box-shadow: 0 3px 10px 0 rgba(86,99,247,0.10);
+      animation: popIn .7s;
+      transition: box-shadow 0.27s;
+    }
+    .result-card h4 {
+      color: #5663f7;
+      margin-bottom: 19px;
+      font-size: 1.22em;
+    }
+    table {
+      width: 95%;
+      margin: 0 auto 12px auto;
+      border-collapse: collapse;
+      overflow: hidden;
+      font-size: 1em;
+    }
+    th, td {
+      padding: 10px 7px;
+      text-align: center;
+      border-bottom: 1px solid #e3e7fa;
+    }
+    th {
+      background: #dbdbf1;
+      color: #494c77;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+    tr:nth-child(even) { background: #edf2ff; }
+    tr:nth-child(odd)  { background: #f6f9ff; }
+    td:last-child, th:last-child { border-right: none; }
+    a {
+      color: #6556c9; 
+      text-decoration: none;
+      font-weight: 600;
+      transition: color .2s;
+    }
+    a:hover { color: #2778e7;}
+    .error {
+      color: #f04a5c;
+      font-size: 1.08em;
+      margin-top: 24px;
+    }
+    .about {
+      color: #8b95bd;
+      font-size: 0.91em;
+      margin-top: 34px;
+    }
+    @media (max-width: 740px) {
+      .container { padding: 12px 3px; }
+      table { font-size: .98em; }
+      th, td { padding: 7px 1.5px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>✨ Product Comparison Tool ✨</h2>
+    <select id="productSelect">
+      <option value="">-- Select Product --</option>
+      <option value="iPhone 13">iPhone 13</option>
+      <option value="Samsung Galaxy S22">Samsung Galaxy S22</option>
+      <!-- Add more product options here! -->
+    </select>
+    <br>
+    <button onclick="compareProduct()">Compare</button>
+    <div id="output"></div>
+    <div class="about">
+      <hr>
+      <span>Created for Hackathon 🏆 | UI with ✨ by [Your Name]</span>
+    </div>
+  </div>
+  <script>
+    // Multi-attribute data for products
+    const products = {
+      "iPhone 13": {
+        "Amazon": {
+          price: "₹60,000", link: "https://amazon.in/iphone13", rating: "4.7/5",
+          ram: "4GB", storage: "128GB", battery: "3227mAh"
+        },
+        "Flipkart": {
+          price: "₹58,500", link: "https://flipkart.com/iphone13", rating: "4.6/5",
+          ram: "4GB", storage: "128GB", battery: "3227mAh"
+        },
+        "Croma": {
+          price: "₹59,000", link: "https://croma.com/iphone13", rating: "4.8/5",
+          ram: "4GB", storage: "128GB", battery: "3227mAh"
+        }
+      },
+      "Samsung Galaxy S22": {
+        "Amazon": {
+          price: "₹52,000", link: "https://amazon.in/samsungs22", rating: "4.5/5",
+          ram: "8GB", storage: "128GB", battery: "3700mAh"
+        },
+        "Flipkart": {
+          price: "₹50,999", link: "https://flipkart.com/samsungs22", rating: "4.6/5",
+          ram: "8GB", storage: "128GB", battery: "3700mAh"
+        },
+        "Croma": {
+          price: "₹51,500", link: "https://croma.com/samsungs22", rating: "4.4/5",
+          ram: "8GB", storage: "128GB", battery: "3700mAh"
+        }
+      },
+      // Add more products here similarly!
+    };
+
+    function compareProduct() {
+      const productName = document.getElementById("productSelect").value;
+      const outputDiv = document.getElementById("output");
+      outputDiv.innerHTML = "";
+
+      if (!productName) {
+        outputDiv.innerHTML = "<div class='error'>Please select a product!</div>";
+        return;
+      }
+
+      const productData = products[productName];
+      if (productData) {
+        let html = `<div class='result-card'><h4>Comparison for <em>${productName}</em></h4>`;
+        html += "<table><tr><th>Platform</th><th>Price</th><th>Rating</th><th>RAM</th><th>Storage</th><th>Battery</th><th>Link</th></tr>";
+        for (const [platform, details] of Object.entries(productData)) {
+          html += `<tr>
+            <td>${platform}</td>
+            <td>${details.price}</td>
+            <td>${details.rating || "-"}</td>
+            <td>${details.ram || "-"}</td>
+            <td>${details.storage || "-"}</td>
+            <td>${details.battery || "-"}</td>
+            <td><a href="${details.link}" target="_blank">View</a></td>
+          </tr>`;
+        }
+        html += "</table></div>";
+        outputDiv.innerHTML = html;
+        // Scroll to output for mobile screens
+        outputDiv.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        outputDiv.innerHTML = "<div class='error'>Product data not found!</div>";
+      }
+    }
+  </script>
+</body>
+</html>
