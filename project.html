@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Product Comparison Cards</title>
+  <style>
+    body {
+      background: #f9fafc;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 700px;
+      margin: 50px auto 0;
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 12px 26px 0 rgba(124,58,237,0.07);
+      padding: 44px 35px 32px;
+      text-align: center;
+      animation: popIn 1s;
+    }
+    @keyframes popIn {
+      0%   { transform: scale(0.93); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    h2 {
+      color: #222e42;
+      margin-bottom: 1.2em;
+      font-weight: 700;
+    }
+    select {
+      width: 88%;
+      padding: 12px;
+      margin: 18px 0 14px 0;
+      border: 1px solid #2dd4bf;
+      font-size: 1.08em;
+      border-radius: 7px;
+      outline: none;
+      transition: border 0.3s;
+    }
+    button {
+      background: #3f3c3c;
+      color:#ffffff;
+      font-size: 1.08em;
+      padding: 12px 38px;
+      border: none;
+      cursor: pointer;
+      border-radius: 6px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      margin-top: 0.6em;
+      transition: background 0.22s;
+    }
+    button:hover {
+      background: #000000;
+      color: #d9efed;
+    }
+    .card-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 34px;
+    }
+    @keyframes fadePopIn {
+  0%   { opacity: 0; transform: scale(0.91) translateY(35px);}
+  100% { opacity: 1; transform: scale(1) translateY(0);}
+}
+    .platform-card {
+      flex: 1 1 180px;
+      background: #e4fdfc;
+      border-radius: 16px;
+      box-shadow: 0 3px 12px rgba(124,58,237,0.08);
+      padding: 17px 12px 17px 12px;
+      max-width: 220px;
+      min-width: 180px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 12px;
+      opacity: 0;
+      animation: fadePopIn 0.75s forwards;
+    }
+    .platform-title {
+      margin: 8px 0 10px 0;
+      color: #222e42;
+      font-weight: 700;
+      font-size: 1.09em;
+    }
+    .product-img {
+      width: 95px;
+      height: 95px;
+      object-fit: cover;
+      border-radius: 11px;
+      box-shadow: 0 2px 8px rgba(45,212,191,0.11);
+      margin-bottom: 10px;
+      background: #dfeaff;
+    }
+    .info-list {
+      text-align: left;
+      margin-bottom: 11px;
+      width: 90%;
+      font-size: .97em;
+    }
+    .info-list span {
+      color: #26a69a;
+      font-weight: 600;
+    }
+    .card-link {
+      display: inline-block;
+      padding: 8px 22px;
+      background: #26a69a;
+      color: #fff;
+      border-radius: 7px;
+      font-weight: 600;
+      text-decoration: none;
+      margin-top: 6px;
+      transition: background 0.18s;
+      font-size: 1em;
+      box-shadow: 0 2px 8px rgba(45,212,191,0.11);
+    }
+    .card-link:hover {
+      background: #000000;
+      color: #fff;
+    }
+    .error {
+      color: #f04a5c;
+      font-size: 1.08em;
+      margin-top: 24px;
+    }
+    @media (max-width: 780px) {
+      .container { padding: 7vw 1vw; }
+      .card-row { flex-direction: column; align-items: center; }
+      .platform-card { width: 95%; max-width: 320px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Product Comparison</h2>
+    <p>"Compare prices, specs, and more—instantly."</p>
+    <select id="categorySelect" onchange="updateProductDropdown()">
+  <option value="">-- Select Category --</option>
+  <option value="Phone">Phone</option>
+  <option value="Laptop">Laptop</option>
+  <option value="Headphones">Headphones</option>
+  <option value="Smartwatch">Smartwatch</option>
+  <option value="Tablet">Tablet</option>
+</select>
+
+    <select id="productSelect">
+      <option value="">-- Select Product --</option>
+      <option value="iPhone 13">iPhone 13</option>
+      <option value="Samsung Galaxy S22">Samsung Galaxy S22</option>
+      <option value="MacBook Air M2">MacBook Air M2</option>
+      <option value="Dell Inspiron 15">Dell Inspiron 15</option>
+      <option value="boAt Rockerz 450">boAt Rockerz 450</option>
+      <option value="Sony WH-1000XM5">Sony WH-1000XM5</option>
+      <opytion value="Samsung Galaxy Watch 6">Samsung Galaxy Watch 6</option>
+      <option value="Amazfit GTS 4">Amazfit GTS 4</option>
+      <option value ="Apple iPad Air (5th Gen)">Apple iPad Air (5th Gen)</option>
+      <option value="Lenovo Tab M10">Lenovo Tab M10</option>
+        <!-- Add more product options here! -->
+    </select>
+    <br>
+    <button onclick="compareProduct()">Compare</button>
+    <div id="output"></div>
+  </div>
+  <script>
+    // Product data: one image per product, info per platform
+    const products = {
+    Phone: {
+      "iPhone 13": {
+        image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=300&q=80",
+        platforms: {
+          "Amazon": {
+            price: "₹60,000", link: "https://amazon.in/iphone13", rating: "4.7/5",
+            ram: "4GB", storage: "128GB", battery: "3227mAh"
+          },
+          "Flipkart": {
+            price: "₹58,500", link: "https://flipkart.com/iphone13", rating: "4.6/5",
+            ram: "4GB", storage: "128GB", battery: "3227mAh"
+          },
+          "Croma": {
+            price: "₹59,000", link: "https://croma.com/iphone13", rating: "4.8/5",
+            ram: "4GB", storage: "128GB", battery: "3227mAh"
+          }
+        }
+      },
+      "Samsung Galaxy S22": {
+        image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=300&q=80",
+        platforms: {
+          "Amazon": {
+            price: "₹52,000", link: "https://amazon.in/samsungs22", rating: "4.5/5",
+            ram: "8GB", storage: "128GB", battery: "3700mAh"
+          },
+          "Flipkart": {
+            price: "₹50,999", link: "https://flipkart.com/samsungs22", rating: "4.6/5",
+            ram: "8GB", storage: "128GB", battery: "3700mAh"
+          },
+          "Croma": {
+            price: "₹51,500", link: "https://croma.com/samsungs22", rating: "4.4/5",
+            ram: "8GB", storage: "128GB", battery: "3700mAh"
+          }
+        }
+      },// Add more products in this style!
+    },
+    Laptop: {
+      "MacBook Air M2": {
+        image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=300&q=80",
+        platforms: {
+          "Amazon": {
+            price: "₹92,000", link: "https://amazon.in/macbookairm2", rating: "4.8/5",
+            ram: "8GB", storage: "256GB SSD", battery: "18 hours"
+          },
+          "Flipkart": {
+            price: "₹90,500", link: "https://flipkart.com/macbookairm2", rating: "4.7/5",
+            ram: "8GB", storage: "256GB SSD", battery: "18 hours"
+          },
+          "Croma": {
+            price: "₹91,000", link: "https://croma.com/macbookairm2", rating: "4.9/5",
+            ram: "8GB", storage: "256GB SSD", battery: "18 hours"
+          }
+        }
+      },
+      "Dell Inspiron 15": {
+        image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=300&q=80",
+        platforms: {
+          "Amazon": {
+            price: "₹55,000", link: "https://amazon.in/dellinspiron15", rating: "4.3/5",
+            ram: "8GB", storage: "512GB SSD", battery: "10 hours"
+          },
+          "Flipkart": {
+            price: "₹53,999", link: "https://flipkart.com/dellinspiron15", rating: "4.4/5",
+            ram: "8GB", storage: "512GB SSD", battery: "10 hours"
+          },
+          "Croma": {
+            price: "₹54,500", link: "https://croma.com/dellinspiron15", rating: "4.2/5",
+            ram: "8GB", storage: "512GB SSD", battery: "10 hours"
+          }
+        }
+      },// Add more products in this style!
+    },
+    Headphones: {
+      "boAt Rockerz 450": {
+        image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=300&q=80",
+        platforms: {
+          "Amazon": {
+            price: "₹2,000", link: "https://amazon.in/boatrockerz450", rating: "4.4/5",
+            battery: "15 hours"
+          },
+          "Flipkart": {
+            price: "₹1,899", link: "https://flipkart.com/boatrockerz450", rating: "4.3/5",
+            battery: "15 hours"
+          },
+          "Croma": {
+            price: "₹1,950", link: "https://croma.com/boatrockerz450", rating: "4.5/5",
+            battery: "15 hours"
+          }
+        }
+      },
+      "Sony WH-1000XM5": {
+        image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=300&q=80",
+        platforms: {
+          "Amazon": {
+            price: "₹25,000", link: "https://amazon.in/sonywh1000xm5", rating: "4.7/5",
+            battery: "30 hours"
+          },
+          "Flipkart": {
+            price: "₹24,500", link: "https://flipkart.com/sonywh1000xm5", rating: "4.6/5",
+            battery: "30 hours"
+          },
+          "Croma": {
+            price: "₹24,800", link: "https://croma.com/sonywh1000xm5", rating: "4.8/5",
+            battery: "30 hours"
+          }
+        }
+    }
+  },
+    Smartwatch: {
+      "Samsung Galaxy Watch 6": {
+        image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=300&q=80",
+        platforms: {
+          "Amazon": {
+            price: "₹28,000", link: "https://amazon.in/galaxywatch6", rating: "4.5/5",
+            battery: "40 hours"
+          },
+          "Flipkart": {
+            price: "₹27,500", link: "https://flipkart.com/galaxywatch6", rating: "4.4/5",
+            battery: "40 hours"
+          },
+          "Croma": {
+            price: "₹27,800", link: "https://croma.com/galaxywatch6", rating: "4.6/5",
+            battery: "40 hours"
+          }
+        }
+      },
+      "Amazfit GTS 4": {
+        image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=300&q=80",
+        platforms: {
+          "Amazon": {
+            price: "₹12,000", link: "https://amazon.in/amazfitgts4", rating: "4.3/5",
+            battery: "14 days"
+          },
+          "Flipkart": {
+            price: "₹11,500", link: "https://flipkart.com/amazfitgts4", rating: "4.2/5",
+            battery: "14 days"
+          },
+          "Croma": {
+            price: "₹11,800", link: "https://croma.com/amazfitgts4", rating: "4.4/5",
+            battery: "14 days"
+          }
+        }
+      },
+    },
+    Tablet: {
+      "Apple iPad Air (5th Gen)": {
+        image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=300&q=80",
+        platforms: {
+          "Amazon": {
+            price: "₹54,000", link: "https://amazon.in/ipadair5thgen", rating: "4.7/5",
+            ram: "8GB", storage: "256GB"
+          },
+          "Flipkart": {
+            price: "₹53,500", link: "https://flipkart.com/ipadair5thgen", rating: "4.6/5",
+            ram: "8GB", storage: "256GB"
+          },
+          "Croma": {
+            price: "₹53,800", link: "https://croma.com/ipadair5thgen", rating: "4.8/5",
+            ram: "8GB", storage: "256GB"
+          }
+        }
+      },
+      "Lenovo Tab M10": {
+        image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=300&q=80",
+        platforms: {
+          "Amazon": {
+            price: "₹15,000", link: "https://amazon.in/lenovotabm10", rating: "4.2/5",
+            ram: "4GB", storage: "64GB"
+          },
+          "Flipkart": {
+            price: "₹14,500", link: "https://flipkart.com/lenovotabm10", rating: "4.1/5",
+            ram: "4GB", storage: "64GB"
+          },
+          "Croma": {
+            price: "₹14,800", link: "https://croma.com/lenovotabm10", rating: "4.3/5",
+            ram: "4GB", storage: "64GB"
+          }
+        }
+      }
+    }
+  };
+function updateProductDropdown() {
+  const category = document.getElementById("categorySelect").value;
+  const productDropdown = document.getElementById("productSelect");
+  productDropdown.innerHTML = ""; // Clear previous options
+
+  if (!category || !products[category]) {
+    productDropdown.innerHTML = "<option value=''>-- Select Product --</option>";
+    return;
+  }
+
+  let options = "<option value=''>-- Select Product --</option>";
+  for (const prod in products[category]) {
+    options += `<option value="${prod}">${prod}</option>`;
+  }
+  productDropdown.innerHTML = options;
+}
+
+    function compareProduct() {
+      const category = document.getElementById("categorySelect").value;
+      const productName = document.getElementById("productSelect").value;
+      const outputDiv = document.getElementById("output");
+      outputDiv.innerHTML = "";
+
+    if (!category || !productName || !products[category][productName]) {
+    outputDiv.innerHTML = "<div class='error'>Please select category and product!</div>";
+    return;
+  }
+
+      const productData = products[category] && products[category][productName];
+      if (productData && productData.platforms) {
+        let html = `<div class="card-row">`;
+        for (const [platform, details] of Object.entries(productData.platforms)) {
+          html += `
+            <div class="platform-card">
+              <img class="product-img" src="${productData.image}" alt="${productName}">
+              <div class="platform-title">${platform}</div>
+              <div class="info-list">
+                <div><span>Price:</span> ${details.price}</div>
+                <div><span>Rating:</span> ${details.rating || "-"}</div>
+                <div><span>RAM:</span> ${details.ram || "-"}</div>
+                <div><span>Storage:</span> ${details.storage || "-"}</div>
+                <div><span>Battery:</span> ${details.battery || "-"}</div>
+              </div>
+              <a class="card-link" href="${details.link}" target="_blank">View on ${platform}</a>
+            </div>
+          `;
+        }
+        html += `</div>`;
+        outputDiv.innerHTML = html;
+        outputDiv.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        outputDiv.innerHTML = "<div class='error'>Product data not found!</div>";
+      }
+    }
+  </script>
+</body>
+</html>
